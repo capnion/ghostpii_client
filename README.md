@@ -1,4 +1,4 @@
-Before you read too much below, consider having a look at these streamlined setup instructions and our library of tutorials and demonstrations.  While the tutorials are presented via Jupyter notebook, you can use Ghost PII anywhere you use Python.  
+Before you read too much below, consider having a look at these streamlined setup instructions, our library of tutorials and demonstrations, or our [Slack workspace](https://join.slack.com/t/ghostpii/shared_invite/zt-1bkub2k10-aPrBYOowvyxwJehcdePmAw).  While the tutorials are presented via Jupyter notebook, you can use Ghost PII anywhere you use Python.  
 
 # What is Ghost PII?
 
@@ -11,12 +11,14 @@ Specifically, Ghost PII provides encryption functionality, the (unique and novel
 # How does Ghost PII work?
 
 The technologically novel part of the answer is that Ghost PII employs a variety of emerging privacy-enhancing technologies (sometimes abbreviated as PETs) including… 
-homomorphic encryption,
-differential privacy, and
-secure multi-party computation.
+- homomorphic encryption,
+- differential privacy, and
+- secure multi-party computation.
+
 However, Ghost PII does not require the user to interact directly with these technologies nor does it require significant knowledge of their workings.  Ghost PII’s client-side module provides special data types and methods for handling specially encrypted data.  When these methods are called, the module interprets it in order to…
-perform special mathematical computations on the encrypted data, and
-download a special “answer key” from the remote key hosting API.
+- perform special mathematical computations on the encrypted data, and
+- download a special “answer key” from the remote key hosting API.
+
 This answer key is relatively unique to Ghost PII and allows the decryption of the outcome of the computation in question, yet it does not allow the original data to be decrypted or otherwise leak additional information about it. 
 
 The short story, though, is that you interact with familiar objects like lists and data frames, call modeling routines, etc. and the module automatically and invisibly talks to a remote service to provide you with answers where you are permitted them and explicit denials where you are not.
