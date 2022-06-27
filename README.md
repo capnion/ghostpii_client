@@ -1,3 +1,5 @@
+This repo is under construction.  We expect this process to be complete July 1, 2022.
+
 Before you read too much below, consider having a look at these streamlined setup instructions, our library of tutorials and demonstrations, or our [Slack workspace](https://join.slack.com/t/ghostpii/shared_invite/zt-1bkub2k10-aPrBYOowvyxwJehcdePmAw).  While the tutorials are presented via Jupyter notebook, you can use Ghost PII anywhere you use Python.  
 
 # What is Ghost PII?
