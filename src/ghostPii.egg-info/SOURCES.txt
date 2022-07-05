@@ -8,6 +8,7 @@ src/ghostPii/db_toolbox.py
 src/ghostPii/encoding.py
 src/ghostPii/num_theory_toolbox.py
 src/ghostPii/polynomial.py
+src/ghostPii/recrypt.py
 src/ghostPii/seed_to_hash.py
 src/ghostPii.egg-info/PKG-INFO
 src/ghostPii.egg-info/SOURCES.txt
@@ -20,3 +21,4 @@ src/ghostPii/data_structures/norm_cipher_list.py
 src/ghostPii/data_structures/norm_cipher_num.py
 src/ghostPii/data_structures/norm_cipher_quant.py
 src/ghostPii/data_structures/norm_cipher_string.py
+src/ghostPii/data_structures/paillier_num.py
