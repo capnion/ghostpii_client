@@ -1,4 +1,4 @@
-This repo is under construction.  We expect this process to be complete July 1, 2022.
+This repo is under construction.  We expect this process to be complete July 6, 2022.
 
 Before you read too much below, consider having a look at these [streamlined setup instructions](https://github.com/capnion/ghostpii_client/blob/main/SETUP.md), our library of tutorials and demonstrations, or our [Slack workspace](https://join.slack.com/t/ghostpii/shared_invite/zt-1bkub2k10-aPrBYOowvyxwJehcdePmAw).  While the tutorials are presented via Jupyter notebook, you can use Ghost PII anywhere you use Python.  
 
@@ -9,6 +9,10 @@ Ghost PII is a technology for encrypting data, enabling others to extract insigh
 From an architectural perspective, Ghost PII is a Python module that interacts with a specialized keyhosting API via the web or other network.  This repo contains the code of that Python module, a number of tutorials in the form of Jupyter notebooks, as well as instructions for accessing the keyhosting API .  Ghost PII is designed to mesh seamlessly with the broader open source Python data ecosystem and to be easily accessible to Python familiar engineers and data scientists without need of additional training.  In many cases, the encrypted data objects in Ghost PII can be handled with exactly the same code you would use to handle the analogous string or integer object in base Python with analogous results.
 
 Specifically, Ghost PII provides encryption functionality, the (unique and novel) ability to compute some things but not others from that specially encrypted data, and a flexible permissions and audit system both to designate who can compute what as well as if and when they did it.
+
+<p align="center">
+  <img src="https://github.com/capnion/ghostpii_client/blob/main/github.png">
+</p>
 
 # How does Ghost PII work?
 
