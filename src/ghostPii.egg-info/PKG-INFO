@@ -1,0 +1,36 @@
+Metadata-Version: 2.1
+Name: ghostPii
+Version: 0.1.1
+Summary: A homomorphic encryption package
+Home-page: https://github.com/capnion/capnion_client_org
+Author: Jack Phillips
+Author-email: jackp@capnion.com
+License: UNKNOWN
+Project-URL: full_repo, https://github.com/capnion/capnion_client_org
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# capnion_client_org
+Python code for doing homomorphic computations on strings in conversation with Capnion's API.
+
+Visit 
+https://ghostpii.com/user-signup or https://ghostpii.com/organization-signup
+to obtain an API token.
+
+There are several demo notebooks located in the demo_notebooks folder of this repo briefly described below:
+
+-Interactive_Documentation.ipynb shows some of the data structures available and some of their basic functionality.
+
+-Demo.ipynb shows some record linkage operations as well as showing how to search the encrypted data and how to define your own functions to use on strings in the encrypted data.
+
+-Distance_Calculations.ipynb and Quant_testing.ipynb both show functionality regarding the use of integers and floats in the encrypted data and some basic calculations.
+
+-Organization_Sharing_owners.ipynb and Organization_Sharing_worker.ipynb show how encrypted data can be shared between users and how to add or restrict permissions on the shared data.
+
+
+
