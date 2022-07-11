@@ -16,4 +16,4 @@ from .data_structures.paillier_num import *
 import sys
 import warnings
 if sys.version_info < (3,8):
-    warnings.warn("WARNING.................You are using python version < 3.8\nSome of our functionality may not work as expected. Please upgrade to python 3.8 or above to avoid version errors.",DeprecationWarning)
+    warnings.warn("WARNING.................You are using python version < 3.8\nSome of our functionality may not work as expected. Please upgrade to python 3.8 or above to avoid version errors.")
