@@ -3,7 +3,7 @@ Before you read too much below, you might consider having a look at
 - our [Slack workspace](https://join.slack.com/t/ghostpii/shared_invite/zt-1bkub2k10-aPrBYOowvyxwJehcdePmAw), or
 - our library of tutorials and demonstrations (as .ipynb files in this [Github repo](https://github.com/capnion/ghostpii_demos) or as [interactive Jupyter notebooks via Binder](https://mybinder.org/v2/gh/capnion/ghostpii_demos/main)).
 
-While the tutorials are presented in Jupyter notebooks, you can use Ghost PII anywhere you use Python.  Ghost PII is maintained by Capnion, Inc. and you can learn more about our company [here](www.capnion.com).
+While the tutorials are presented in Jupyter notebooks, you can use Ghost PII anywhere you use Python.  Ghost PII is maintained by Capnion, Inc. and you can learn more about our company [here](https://www.capnion.com).
 
 # What is Ghost PII?
 
