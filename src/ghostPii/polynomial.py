@@ -5,7 +5,7 @@ import numpy as np
 import json
 import time
 
-from src.ghostPii.data_structures.paillier_num import PaillierInt, PaillierFloat
+from .data_structures.paillier_num import PaillierInt, PaillierFloat
 from .db_toolbox import *
 from .recrypt import paillier_to_otp
 
@@ -184,7 +184,7 @@ def full_polynomial_compute(apiContext,polyString,variables,myIndices,myCiphers,
             else:
                 return NormCipherQuant(apiContext,ans,fromPlain=True)
     end3 = time.time()
-      
+
     return ncq
     
     
