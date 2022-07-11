@@ -1,4 +1,9 @@
-Before you read too much below, consider having a look at these [streamlined setup instructions](https://github.com/capnion/ghostpii_client/blob/main/SETUP.md), our library of tutorials and demonstrations, or our [Slack workspace](https://join.slack.com/t/ghostpii/shared_invite/zt-1bkub2k10-aPrBYOowvyxwJehcdePmAw).  While the tutorials are presented via Jupyter notebook, you can use Ghost PII anywhere you use Python.  
+Before you read too much below, you might consider having a look at 
+- these [streamlined setup instructions](https://github.com/capnion/ghostpii_client/blob/main/SETUP.md), 
+- our [Slack workspace](https://join.slack.com/t/ghostpii/shared_invite/zt-1bkub2k10-aPrBYOowvyxwJehcdePmAw), or
+- our library of tutorials and demonstrations (as .ipynb files in this [Github repo](https://github.com/capnion/ghostpii_demos) or as [interactive Jupyter notebooks via Binder](https://mybinder.org/v2/gh/capnion/ghostpii_demos/main)).
+
+While the tutorials are presented in Jupyter notebooks, you can use Ghost PII anywhere you use Python.  
 
 # What is Ghost PII?
 
