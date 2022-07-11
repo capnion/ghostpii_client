@@ -26,7 +26,7 @@ The technologically novel part of the answer is that Ghost PII employs a variety
 
 However, Ghost PII does not require the user to interact directly with these technologies nor does it require significant knowledge of their workings.  Ghost PII’s client-side module provides special data types and methods for handling specially encrypted data.  When these methods are called, the module interprets it in order to…
 - perform special mathematical computations on the encrypted data, and
-- download a special “answer key” from the remote key hosting API.
+- download a special “answer key” from the remote key hosting API (when appropriate).
 
 This answer key is relatively unique to Ghost PII and allows the decryption of the outcome of the computation in question, yet it does not allow the original data to be decrypted or otherwise leak additional information about it. 
 
@@ -38,6 +38,6 @@ Finally, but possibly most importantly for some stakeholders, the role played by
 
 Ghost PII is maintained by Capnion, Inc.  We maintain an instance of the keyhosting API, intended for curious researchers and test-drivers, open to all potential users at no charge.  You can find it at www.ghostpii.com along with the previously mentioned audit functionality and an interface for obtaining, modifying, and retrieving the user identity tokens you can see in our tutorial examples.  The future is always uncertain but we intend to maintain this free test service indefinitely.  We make no specific guarantees regarding this free-access instance of the API, and please be forgiving of performance variance in particular - as we do no gatekeeping, we have limited ability to address impacts of scale and user behavior on performance.  
 
-If you are interested in a more thorough test-drive, and especially if performance is important, please contact acmueller@capnion.com.   Among other options, it is exceptionally easy to stand up an instance of the API in your favorite cloud environment, doing so often significantly improves performance for limiting network latency issues, and this is often the best option for users at large organizations for these and other reasons. 
+If you are interested in a more thorough test-drive, and especially if performance is important, please contact [acmueller@capnion.com](acmueller@capnion.com).   Among other options, it is exceptionally easy to stand up an instance of the API in your favorite cloud environment, doing so often significantly improves performance for limiting network latency issues, and this is often the best option for users at large organizations for these and other reasons. 
 
 And we would love your feedback in general!
