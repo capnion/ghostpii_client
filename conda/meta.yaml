@@ -1,0 +1,35 @@
+package:
+  name: "ghostPii"
+  version: "1.0.3"
+
+source:
+  git_rev: v1.0.3
+  git_url: https://github.com/capnion/ghostpii_client
+  path: ..
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  build:
+    noarch: python
+  run:
+    - python >=3.6
+    - numpy 
+    - pandas 
+    - SQLAlchemy 
+    - scipy
+    - sympy
+
+about:
+  home: https://github.com/capnion/ghostpii_client
+  license: MIT
+  license_familY: MIT
+  license_file: LICENSE
+  summary: "A homomorphic encryption package"
+  dev_url: https://github.com/giswqs/geodemo
+
+
+extra:
+  recipe-maintainers:
+    - Capnion Inc.
