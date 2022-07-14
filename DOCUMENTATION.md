@@ -350,10 +350,10 @@ List of ciphertext integers with their corresponding index integers in tuples
 This class manages authentication and connection to the API. One is needed to create any of the above data objects and serves as your digital identity while working with the encrypted data.
 
 ## Parameters
-● headers -- dict
-This should be a dictionary of the form:
+```
+● headers -- This should be a dictionary of the form: 
 {'Authorization': 'Token xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'}
-
+```
 # Permissions
 
 { “Polys”:[options], “Stats”:[options], "LaplaceScaleParameter":float }
