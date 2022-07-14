@@ -1,3 +1,11 @@
+## Quick Links
+- [NormCipherFrame](#normcipherframe)
+- [NormCipherList](#normcipherlist)
+- [NormCipherString](#normcipherstring)
+- [NormCipherQuant](#normcipherquant)
+- [NormCipherNum](#normciphernum)
+- [Permissions](#permissions)
+
 # NormCipherFrame
 
 **class** NormCipherFrame( **myContext, cipherListOfListOfList,
