@@ -4,6 +4,7 @@
 - [NormCipherString](#normcipherstring)
 - [NormCipherQuant](#normcipherquant)
 - [NormCipherNum](#normciphernum)
+- [CryptoContext](#cryptocontext)
 - [Permissions](#permissions)
 
 # NormCipherFrame
@@ -341,6 +342,17 @@ List of ciphertext integers with their corresponding index integers in tuples
 ● + , -, *, **
 ● ==, >=, <=, >, <, !=
 ```
+
+# CryptoContext
+
+**class** CryptoContext(self,headers):
+
+This class manages authentication and connection to the API. One is needed to create any of the above data objects and serves as your digital identity while working with the encrypted data.
+
+## Parameters
+● headers -- dict
+This should be a dictionary of the form:
+{'Authorization': 'Token xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'}
 
 # Permissions
 
