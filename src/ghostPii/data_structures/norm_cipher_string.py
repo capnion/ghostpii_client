@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import json
 from sqlalchemy import *
+import urllib.parse
 
 #a tapas of additional scientific computing 
 from scipy.spatial import distance
@@ -25,6 +26,10 @@ class NormCipherString:
         # api context is an important enduring property of the object
         self.apiContext = apiContext
         
+        if isinstance(permLevel,dict):
+            permLevel = json.dumps(permLevel)
+        self.permLevel = permLevel
+
         # if we are passed a string, we will encrypt it for the user
         if isinstance(cipherList,str):
             encoded_str = encode(cipherList)

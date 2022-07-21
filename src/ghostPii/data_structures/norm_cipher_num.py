@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import json
 from sqlalchemy import *
+import urllib.parse
 
 #a tapas of additional scientific computing 
 from scipy.spatial import distance
@@ -18,11 +19,14 @@ from ..polynomial import *
 class NormCipherNum:
     def __init__(self, apiContext,cipher,index=False,fromPlain=False,floatData=False,keyRange = 2000,permLevel='standard'):
         
+        if isinstance(permLevel,dict):
+            permLevel = json.dumps(permLevel)
+        self.permLevel = permLevel
+
         if fromPlain == True:
             #in this scenario cipher is actually a plaintext integer
             #register data
-            myKeyLoc = apiContext.get('/state/?length=1'+'&range='+str(keyRange)+'&permLevel='+permLevel)
-            
+            myKeyLoc = apiContext.get('/state/?length=1'+'&range='+str(keyRange)+'&permLevel='+urllib.parse.quote(permLevel))            
             #determine key boundaries
             dataBoundary = [myKeyLoc[0]['minId'],myKeyLoc[0]['maxId']]
             

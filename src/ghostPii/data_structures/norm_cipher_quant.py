@@ -26,6 +26,8 @@ class NormCipherQuant:
         if fromPlain == True:
             #in this scenario cipherIntegerList is actually a list of plaintext integers
             #register data
+            if isinstance(permLevel,dict):
+                permLevel = json.dumps(permLevel)
             myKeyLoc = apiContext.get('/state/?length='+str(len(cipherList))+'&range='
                                       +str(keyRange)+'&permLevel='+urllib.parse.quote(permLevel))[0]
             
@@ -71,6 +73,7 @@ class NormCipherQuant:
         self.length = len(cipherList)
         self.nums = [i for i in range(self.length)]
         self.apiContext = apiContext
+        self.permLevel = permLevel
         
         self.symbolic = symbolic
 

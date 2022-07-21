@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import json
 from sqlalchemy import *
+import urllib.parse
 
 #a tapas of additional scientific computing 
 from scipy.spatial import distance
@@ -21,8 +22,12 @@ class NormCipherList:
 
     def __init__(self,apiContext,cipherListOfList,indexData=False,fromPlain=False,seedString=False,keyRange=2000,permLevel='standard'):
         
+        if isinstance(permLevel,dict):
+            permLevel = json.dumps(permLevel)
+        self.permLevel = permLevel
+
         if fromPlain:
-            importData = import_and_encrypt_list(cipherListOfList,apiContext,seedString,keyRange)
+            importData = import_and_encrypt_list(cipherListOfList,apiContext,seedString,keyRange,permLevel=permLevel)
             self.cipherListOfList = importData[0]
             self.indicesListOfList = importData[1]
             
@@ -387,7 +392,8 @@ def import_and_encrypt_list(myPlaintext,apiContext,desiredPerms=False,seedString
         myKeyLoc = apiContext.get('/statehash/?length=%d&seedString=%s'%(myLen,seedString,))[0]
         #print('basic state')
     else:
-        myKeyLoc = apiContext.get('/state/?length='+str(myLen)+'&range='+str(keyRange)+'&permLevel='+permLevel)[0]
+        myKeyLoc = apiContext.get('/state/?length='+str(myLen)+'&range='+str(keyRange)
+                                  +'&permLevel='+urllib.parse.quote(permLevel))[0]
 
 
     #create encryption key for current user

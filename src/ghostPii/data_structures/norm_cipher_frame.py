@@ -4,6 +4,7 @@ import pandas as pd
 import json
 from sqlalchemy import *
 from copy import deepcopy
+import urllib.parse
 
 #a tapas of additional scientific computing 
 from scipy.spatial import distance
@@ -29,6 +30,9 @@ class NormCipherFrame:
         #the rawest version of the underlying data is a list of list of integers
         self.apiContext = apiContext
         self.pure = False
+        if isinstance(permLevel,dict):
+            permLevel = json.dumps(permLevel)
+        self.permLevel = permLevel
         
         if isinstance(cipherListOfListOfList,pd.core.frame.DataFrame): #given a pandas data frame
             if not indexData: #presume the frame is plaintext
@@ -392,8 +396,8 @@ def import_and_encrypt2(myPlaintext,apiContext,dataTypes,desiredPerms=False,seed
             myKeyLoc = apiContext.get('/statehash/?length=%d&seedString=%s'%(myLen,seedString,))[0]
             #print('basic state')
         else:
-            myKeyLoc = apiContext.get('/state/?length='+str(myLen)+'&range='+str(keyRange)+'&permLevel='+permLevel)[0]
-
+            myKeyLoc = apiContext.get('/state/?length='+str(myLen)+'&range='+str(keyRange)
+                                      +'&permLevel='+urllib.parse.quote(permLevel))[0]
         
         #create encryption key for current user
         
