@@ -1,6 +1,6 @@
 package:
   name: "ghostpii"
-  version: "1.0.3"
+  version: "1.0.4"
 
 source:
   git_url: https://github.com/capnion/ghostpii_client

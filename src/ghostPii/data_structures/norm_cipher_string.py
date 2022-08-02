@@ -102,25 +102,15 @@ class NormCipherString:
             print("Ciphertext lengths are different.")
             return False
         else: 
+            myIndices = [(self.indicesList[i],other.indicesList[i]) for i in range(len(self.indicesList))]
+            myCiphers = [(self.cipherList[i],other.cipherList[i]) for i in range(len(self.cipherList))]
             
-            link = linking_key(self.apiContext,json.dumps(self.indicesList+other.indicesList))
+            plainResults = full_polynomial_compute(self.apiContext,'random-equality',['x','y'],myIndices,myCiphers,
+                                                   isFloat=False,paillier=False,outPlain=True)
             
-            queryModulus = link[0]['prime']
-            linkDict = id_dict(link)
             
-            equal = False
-            byCharEqual = []
-            
-            #we are using the presumption that the normcipherstrings are the same length
-            for t in range(self.length):
-                selfProd = polyn_comp_prod(linkDict[self.indicesList[t]],self.cipherList[t],queryModulus)
-                otherProd = polyn_comp_prod(linkDict[other.indicesList[t]],other.cipherList[t],queryModulus)
-                
-                byCharEqual.append(selfProd == otherProd)
-                
-            equal = all(byCharEqual)
-                
-            return equal
+            numList = [int(round(num) == 0) for num in plainResults]
+            return sum(numList) == len(numList)
         
     def __lt__(self,other):
         return [t.residue() for t in self.cipherList] < [t.residue() for t in other.cipherList]

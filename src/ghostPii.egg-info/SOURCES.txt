@@ -2,6 +2,7 @@ LICENSE
 README.md
 pyproject.toml
 setup.cfg
+setup.py
 src/ghostPii/__init__.py
 src/ghostPii/ciphertext.py
 src/ghostPii/db_toolbox.py
