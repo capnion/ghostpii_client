@@ -178,7 +178,7 @@ def full_polynomial_compute(apiContext,polyString,variables,myIndices,myCiphers,
             else:
                 return ans
         else:
-            from src.ghostPii.data_structures.norm_cipher_quant import NormCipherQuant
+            from .data_structures.norm_cipher_quant import NormCipherQuant
             if isSum:
                 return NormCipherQuant(apiContext,[sum(ans)],fromPlain=True)
             else:
