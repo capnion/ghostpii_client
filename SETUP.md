@@ -10,4 +10,6 @@ The portal mentioned also allows you to perform several other important tasks in
 - setting permissions for how data you encrypt will be used,
 - auditing how other users use encrypted data you have shared with them.
 
-The ability to install Ghost PII via Conda directly is coming soon.
+To install Ghost PII via Anaconda use the command below
+
+conda install -c capnion ghostpii
