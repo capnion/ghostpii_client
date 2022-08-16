@@ -3,3 +3,4 @@ pandas
 SQLAlchemy
 scipy
 sympy
+IPython
