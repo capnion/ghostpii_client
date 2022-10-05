@@ -367,6 +367,31 @@ class NormCipherFrame:
             cipherFrame['id{}'.format(column)] = ids_to_append
     
         return cipherFrame.to_sql(table_name,connection)
+
+    def to_file(self,filename):
+        cipherLists = self.lol_of_ciphertext()
+        indexData = self.indicesListOfListOfList
+        if self.is_continuous():
+            indexData = (self.indicesListOfListOfList[0][0][0],self.indicesListOfListOfList[-1][-1][-1])
+        dataTypes = self.dataTypes
+        
+        
+        jsonToSave = json.dumps({'ciphers':cipherLists,'indices':indexData,
+                                 'dataTypes':dataTypes, 'colLengths': self.listOfColMaxChars})
+        
+        try:
+            with open(filename, "w") as outfile:
+                outfile.write(jsonToSave)
+        except:
+            raise Exception("Error writing to the file given")
+        
+        
+    def is_continuous(self):
+        lower = self.indicesListOfListOfList[0][0][0]
+        upper = self.indicesListOfListOfList[-1][-1][-1]
+        totalLength = sum([l*self.rows for l in self.listOfColMaxChars]) - 1 
+        
+        return lower + totalLength == upper
     
  
     
@@ -457,3 +482,26 @@ def import_from_db(cryptoContext,table_name,connection):
             indices_list[i][j] = [k for k in range(indices[i][j],indices[i][j]+col_length)]
         meta_df = meta_df.drop('id{}'.format(i),axis=1)
     return NormCipherFrame(cryptoContext,meta_df,indexData=indices_list)
+
+
+def import_from_file(cryptoContext,filename):
+    with open(filename, 'r') as f:
+        jsonDict = json.load(f)
+        
+    cipherListOfListOfList = jsonDict['ciphers']
+    indicesListOfListOfList = jsonDict['indices']
+    if isinstance(indicesListOfListOfList[0], int):
+        lower = min(indicesListOfListOfList)
+        upper = max(indicesListOfListOfList)
+        indicesListOfListOfList = []
+        colLengths = jsonDict['colLengths']
+        numRows = len(cipherListOfListOfList[0])
+        prevIndex = lower
+        for colIndex in range(len(cipherListOfListOfList)):
+            indicesListOfList = [list(range(j,j+colLengths[colIndex]))
+                                 for j in range(prevIndex,prevIndex+colLengths[colIndex]*numRows,colLengths[colIndex])]
+            indicesListOfListOfList.append(indicesListOfList)
+            prevIndex += colLengths[colIndex]*numRows
+    cipherListOfListOfList = [[decode_ciphertext(word) for word in cipherList] for cipherList in cipherListOfListOfList]
+    return NormCipherFrame(cryptoContext,cipherListOfListOfList,
+                           indexData=indicesListOfListOfList,dataTypes=jsonDict['dataTypes'])

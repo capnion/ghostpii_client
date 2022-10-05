@@ -91,7 +91,8 @@ def sub_from_frame(cipherFrame,myKey,strip=False):
 def add_to_frame_gen(encodedFrame,myKeyGenerator):
     #!!!!!
     #need new error handling for length mismatch issues
-   
+    
+    #this is a hack but it will allow me to get this prototyped
     reverseMap = {}
     atomicInd = 0
     for colInd in range(len(encodedFrame[1])): 
@@ -113,4 +114,5 @@ def add_to_frame_gen(encodedFrame,myKeyGenerator):
         atomicInd += 1
                 
     return toEncrypt
+
 
