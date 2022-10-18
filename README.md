@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/capnion/ghostpii_client/blob/main/webpage.jpg">
+</p>
+
 Before you read too much below, you might consider having a look at 
 - these [streamlined setup instructions](https://github.com/capnion/ghostpii_client/blob/main/SETUP.md), 
 - our [Slack workspace](https://join.slack.com/t/ghostpii/shared_invite/zt-1bkub2k10-aPrBYOowvyxwJehcdePmAw), or
