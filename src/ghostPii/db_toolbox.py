@@ -138,9 +138,22 @@ def encryption_key(apiContext,minMax,htmlDebug=False,seedString=False):
         print("Key generated locally from hash")
         return [{'id':t[0],'atom_key':t[1]} for t in zip(range(minMax[0],minMax[1]),string_to_key(seedString,minMax[1]-minMax[0]))]
     else:    
-        url = '/staticencrypt/?lower=%d&upper=%d' % (minMax[0],minMax[1],)
+        totalLength = minMax[1] - minMax[0]
+        requestLimit = 200000
+        fullResponse = []
+        for i in range((totalLength // requestLimit) + 1):
+            lower = minMax[0] + i * requestLimit
+            upper = minMax[0] + (i+1) * requestLimit
+            if lower == minMax[1]:
+                pass
+            elif upper > minMax[1]:
+                upper = minMax[1]
+                
+            
+            url = '/staticencrypt/?lower=%d&upper=%d' % (lower,upper,)
+            fullResponse += apiContext.get(url,htmlDebug)
         #print(url)
-        return apiContext.get(url,htmlDebug)
+        return fullResponse
     
     
 def paillier_encryption_key(apiContext,htmlDebug=False,seedString=False):
@@ -154,20 +167,38 @@ def paillier_encryption_key(apiContext,htmlDebug=False,seedString=False):
     return apiContext.get(url,htmlDebug)[0]
 
 def decryption_key(apiContext,indicesJson,htmlDebug=False):
+    fullLength = len(indicesJson)
     
-    #get the current timestamp
-    timeStamp = int(str(datetime.datetime.now()).replace(' ','').replace('-','').replace(':','').replace('.','')[0:18])
+    requestLimit = 200000
+    fullResponse = []
+    
+    #print(indicesJson)
+    for i in range((fullLength//requestLimit) + 1):
+        
+        
+        if i > fullLength // requestLimit:
+            curIndices = indicesJson[i*requestLimit:-1]
+        else:
+            curIndices = indicesJson[i*requestLimit:(i+1)*requestLimit]
+        #print(curIndices)
+        #get the current timestamp
+        if curIndices != []:
+            
+            timeStamp = int(str(datetime.datetime.now()).replace(' ','').replace('-','').replace(':','').replace('.','')[0:18])
 
-    #post a blob of information about the desired polynomial computation at the given timestamp
-    
-    test = apiContext.post('/blob/',{"assigned_user":apiContext.userId,"keyJSON":indicesJson,"userhash":timeStamp})
-    #print(test.text)
-    
-    url = '/decrypt/?blobData=%d' % (
-        timeStamp,
-    )
-    #print(url)
-    return apiContext.get(url,htmlDebug)
+            #post a blob of information about the desired polynomial computation at the given timestamp
+            test = apiContext.post('/blob/',{"assigned_user":apiContext.userId,
+                                             "keyJSON":json.dumps(curIndices),"userhash":timeStamp})
+            #print(test.text)
+
+            url = '/decrypt/?blobData=%d' % (
+                timeStamp,
+            )
+            #print(url)  
+            response = apiContext.get(url)
+            fullResponse += response
+    #print(response)
+    return fullResponse
 
 def paillier_decryption_key(apiContext,index,htmlDebug=False):
     
@@ -200,20 +231,38 @@ def linking_key(apiContext,indicesJson):
     #print(url)    
     return apiContext.get(url)
 
-def recryption_key(apiContext,requestData):
+def align_index_key(apiContext,indicesJson):
     
-    #get the current timestamp
-    timeStamp = int(str(datetime.datetime.now()).replace(' ','').replace('-','').replace(':','').replace('.','')[0:18])
+    fullLength = len(indicesJson)
+    requestLimit = 200000
+    fullResponse = []
+    
+    for i in range((fullLength//requestLimit) + 1):
+        
+        
+        if i > fullLength // requestLimit:
+            curIndices = indicesJson[i*requestLimit:-1]
+        else:
+            curIndices = indicesJson[i*requestLimit:(i+1)*requestLimit]
+        
+        #get the current timestamp
+        if curIndices != []:
+            
+            timeStamp = int(str(datetime.datetime.now()).replace(' ','').replace('-','').replace(':','').replace('.','')[0:18])
 
-    #post a blob of information about the desired polynomial computation at the given timestamp
-    test = apiContext.post('/blob/',{"assigned_user":apiContext.userId,"keyJSON":indicesJson,"userhash":timeStamp})
-    #print(test)
-    
-    url = '/recrypt/?blobData=%d' % (
-        timeStamp,
-    )
-    #print(url)    
-    return apiContext.get(url)
+            #post a blob of information about the desired polynomial computation at the given timestamp
+            test = apiContext.post('/blob/',{"assigned_user":apiContext.userId,
+                                             "keyJSON":json.dumps(curIndices),"userhash":timeStamp})
+            #print(test.text)
+
+            url = '/align-indices/?blobData=%d' % (
+                timeStamp,
+            )
+            #print(url)  
+            response = apiContext.get(url)
+            fullResponse += response
+    #print(response)
+    return fullResponse
 
 def ngram_checksum_key(apiContext,window,wordLength,indicesJson,isFloat=False):
     
@@ -248,7 +297,7 @@ def polyn_comp_key(apiContext,polyn,polynVars,indicesTupleList,dualListOfList,is
         'paillier':paillier,
     }
     
-    
+
     #post a blob of information about the desired polynomial computation at the given timestamp
     test = apiContext.post('/blob/',{"assigned_user":apiContext.userId,"keyJSON":json.dumps(polynData),"userhash":timeStamp})
     #print(test.text)
@@ -260,6 +309,44 @@ def polyn_comp_key(apiContext,polyn,polynVars,indicesTupleList,dualListOfList,is
     output = apiContext.get(url)
     #print(output)
     return output
+
+def hash_key(apiContext,wordLength,indicesJson,n):
+    
+    fullLength = len(indicesJson)
+    requestLimit = 500000
+    randomSeed = random.randint(1,1000000)
+    fullResponse = []
+   
+    
+    for i in range(int(fullLength/wordLength)//requestLimit + 1):
+        
+        
+        if (i+1)*requestLimit*wordLength > fullLength:
+            curIndices = indicesJson[i*requestLimit*wordLength:-1]
+        elif i*requestLimit*wordLength >= fullLength:
+            pass
+        else:
+            curIndices = indicesJson[i*requestLimit*wordLength:(i+1)*requestLimit*wordLength]
+    
+        #get the current timestamp
+        timeStamp = int(str(datetime.datetime.now()).replace(' ','').replace('-','').replace(':','').replace('.','')[0:18])
+
+        #post a blob of information about the desired polynomial computation at the given timestamp
+        test = apiContext.post('/blob/',{"assigned_user":apiContext.userId,"keyJSON":indicesJson,"userhash":timeStamp})
+        #print(test.text)
+
+        #this url
+
+        url = '/hash/?wordLength=%d&blobData=%d&n=%d&seed=%d' % (
+            wordLength,
+            timeStamp,
+            n,
+            randomSeed
+        )
+        fullResponse += apiContext.get(url)
+        
+    return fullResponse
+
 
 def rand_poly_comp_key(apiContext,polyn,polynVars,indicesTupleList,dualListOfList,isFloat=False,paillier=True):
     

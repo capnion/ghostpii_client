@@ -130,7 +130,7 @@ class NormCipherString:
     def decrypt(self):
         decryptKeyDict = {t['id']:t['atom_key'] for t in decryption_key(
             self.apiContext,
-            json.dumps(self.indicesList)
+            self.indicesList
         )}
         decryptKey = [decryptKeyDict[i] for i in self.indicesList]
         return ''.join([chr(t[0]-t[1]) for t in zip(self.cipherList,decryptKey)])      

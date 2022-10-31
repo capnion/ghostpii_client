@@ -282,7 +282,7 @@ class NormCipherList:
     def decrypt(self):
         decryptKeyDict = {t['id']:t['atom_key'] for t in decryption_key(
             self.apiContext,
-            json.dumps(flatten_list(self.indicesListOfList))
+            flatten_list(self.indicesListOfList)
         )}
         decryptKey = [decryptKeyDict[i] for i in flatten_list(self.indicesListOfList)]
         i=0
@@ -372,6 +372,35 @@ class NormCipherList:
 
         return listOfGroupedNCL
     
+    def hash(self,n=0):
+        serverStart = time.time()
+        hashDecryptKey = hash_key( 
+            self.apiContext,
+            self.colMaxChars,
+            json.dumps(flatten_list(self.indicesListOfList)),
+            n
+        )
+        serverTime = time.time()- serverStart
+        print("Server Time: {}".format(serverTime))
+        #print(self.colMaxChars)
+        #print(hashDecryptKey)
+        n = int(hashDecryptKey[0]['prime'])
+        coeffs = json.loads(hashDecryptKey[0]['coefficients'])
+        #print(coeffs[0])
+        multiplyStart= time.time()
+        weightedCipherList = []
+        for i in range(self.length):
+            weightedCipherList.append([self.cipherListOfList[i][j]*coeffs[j] for j in range(len(self.cipherListOfList[i]))])
+        multiplyTime = time.time()-multiplyStart
+        print("Multiplication step: {}".format(multiplyTime))
+        sumStart = time.time()
+        hashList = [
+            int(t[0]-t[1]['computed_range_sum'])%n
+            for t in zip([sum(u) for u in weightedCipherList],hashDecryptKey)
+        ]
+        sumTime = time.time()-sumStart
+        print("Sum step: {}".format(sumTime))
+        return hashList
     
     
     

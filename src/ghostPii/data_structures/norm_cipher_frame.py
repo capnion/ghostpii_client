@@ -190,15 +190,15 @@ class NormCipherFrame:
         if isinstance(other, NormCipherFrame):
             return NormCipherFrame(
                 self.apiContext,
-                self.cipherListOfListOfList+other.cipherListOfListOfList,
-                indexData = self.indicesListOfListOfList+other.indicesListOfListOfList,
-                dataTypes = self.dataTypes + other.dataTypes
+                deepcopy(self.cipherListOfListOfList)+deepcopy(other.cipherListOfListOfList),
+                indexData = deepcopy(self.indicesListOfListOfList)+deepcopy(other.indicesListOfListOfList),
+                dataTypes = deepcopy(self.dataTypes) + deepcopy(other.dataTypes)
             )
         elif isinstance(other,NormCipherList):
             newCipherList = deepcopy(self.cipherListOfListOfList)
-            newCipherList.append(other.cipherListOfList)
+            newCipherList.append(deepcopy(other.cipherListOfList))
             newIndicesList = deepcopy(self.indicesListOfListOfList)
-            newIndicesList.append(other.indicesListOfList)
+            newIndicesList.append(deepcopy(other.indicesListOfList))
             newDataTypes = deepcopy(self.dataTypes)
             newDataTypes.append('string')
             return NormCipherFrame(
@@ -229,15 +229,15 @@ class NormCipherFrame:
         return NormCipherFrame(
             self.apiContext,
             [
-                self.cipherListOfListOfList[i]+other.cipherListOfListOfList[i] 
+                deepcopy(self.cipherListOfListOfList[i])+deepcopy(other.cipherListOfListOfList[i])
                 for i in range(len(self.cipherListOfListOfList))
             ],
             indexData = [
-                self.indicesListOfListOfList[i]+other.indicesListOfListOfList[i]
+                deepcopy(self.indicesListOfListOfList[i])+deepcopy(other.indicesListOfListOfList[i])
                 for i in range(len(self.indicesListOfListOfList))
             ],
             dataTypes = self.dataTypes
-        )        
+        )          
     
     def vert_slice(self,rowList):
         return NormCipherFrame(
@@ -335,7 +335,7 @@ class NormCipherFrame:
     def decrypt(self):
         decryptKeyDict = {t['id']:(t['atom_key'],t['atom_key_inv']) for t in decryption_key(
             self.apiContext,
-            json.dumps(flatten_list(flatten_list(self.indicesListOfListOfList)))
+            flatten_list(flatten_list(self.indicesListOfListOfList))
         )}
         decryptKey = [decryptKeyDict[i] for i in flatten_list(flatten_list(self.indicesListOfListOfList))]
         i=0
@@ -392,6 +392,31 @@ class NormCipherFrame:
         totalLength = sum([l*self.rows for l in self.listOfColMaxChars]) - 1 
         
         return lower + totalLength == upper
+    
+    def align_indices(self):
+        flatIndices = flatten_list(flatten_list(self.indicesListOfListOfList))
+        #print(flatIndices)
+        alignmentKey = align_index_key(self.apiContext,flatIndices)
+        minId = int(alignmentKey[0]['id'])
+        
+        newIndicesLOL = []
+        totalIndex = 0
+        for i in range(self.cols):
+            newIndicesL = []
+            for j in range(self.rows):
+                newIndicesL.append(list(range(minId,minId+self.listOfColMaxChars[i])))
+                for k in range(self.listOfColMaxChars[i]):
+                    self.cipherListOfListOfList[i][j][k] += int(alignmentKey[totalIndex]['atom_key'])
+                    if self.dataTypes[i] == 'float':
+                        self.cipherListOfListOfList[i][j][k] += int(alignmentKey[totalIndex]['atom_key_inv'])/32767.0
+                    totalIndex += 1
+                minId += self.listOfColMaxChars[i]
+            newIndicesLOL.append(newIndicesL)
+                
+                
+        self.indicesListOfListOfList = newIndicesLOL
+        
+        return self
     
  
     
