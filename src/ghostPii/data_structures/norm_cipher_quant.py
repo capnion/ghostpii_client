@@ -133,7 +133,7 @@ class NormCipherQuant:
             
             decryptKeyDict = {t['id']:t['atom_key'] for t in decryption_key(
                 self.apiContext,
-                json.dumps(self.indicesList)
+                self.indicesList
             )}
             decryptKey = [decryptKeyDict[i] for i in self.indicesList]
             #print(decryptKey)
@@ -142,7 +142,7 @@ class NormCipherQuant:
             
             decryptKeyDict = {t['id']:(t['atom_key'],t['atom_key_inv']) for t in decryption_key(
                 self.apiContext,
-                json.dumps(self.indicesList)
+                self.indicesList
             )}
             decryptKey = [decryptKeyDict[i] for i in self.indicesList]
             #print(decryptKey)

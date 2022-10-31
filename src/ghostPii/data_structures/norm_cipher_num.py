@@ -165,13 +165,13 @@ class NormCipherNum:
     def decrypt(self):
     
         if type(self.cipher) is int:
-            decryptKeyDict = {t['id']:t['atom_key'] for t in decryption_key(self.apiContext,json.dumps([self.index]))}
+            decryptKeyDict = {t['id']:t['atom_key'] for t in decryption_key(self.apiContext,[self.index])}
             decryptKey = decryptKeyDict[self.index]
             return self.cipher - decryptKey
         else:
             decryptKeyDict = {t['id']:(t['atom_key'],t['atom_key_inv']) for t in decryption_key(
                 self.apiContext,
-                json.dumps([self.index])
+                [self.index]
             )}
             decryptKey = decryptKeyDict[self.index]
             return self.cipher - (decryptKey[0]+decryptKey[1]/32767)
