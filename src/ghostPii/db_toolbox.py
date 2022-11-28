@@ -264,7 +264,7 @@ def align_index_key(apiContext,indicesJson):
     #print(response)
     return fullResponse
 
-def ngram_checksum_key(apiContext,window,wordLength,indicesJson,isFloat=False):
+def ngram_checksum_key(apiContext,window,wordLength,indicesJson,isFloat=False,isAligned=False):
     
     #get the current timestamp
     timeStamp = int(str(datetime.datetime.now()).replace(' ','').replace('-','').replace(':','').replace('.','')[0:18])
@@ -274,12 +274,14 @@ def ngram_checksum_key(apiContext,window,wordLength,indicesJson,isFloat=False):
     #print(test)
     
     #this url
-    url = '/ngramview/?win=%d&wordLength=%d&blobData=%d&isFloat=%s' % (
+    url = '/ngramview/?win=%d&wordLength=%d&blobData=%d&isFloat=%s&isAligned=%s' % (
         window,
         wordLength,
         timeStamp,
-        isFloat
+        isFloat,
+        isAligned
     )
+    print(url)
     return apiContext.get(url)
 
 def polyn_comp_key(apiContext,polyn,polynVars,indicesTupleList,dualListOfList,isFloat=False,paillier=True):

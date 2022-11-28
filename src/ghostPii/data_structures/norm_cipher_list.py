@@ -4,6 +4,7 @@ import pandas as pd
 import json
 from sqlalchemy import *
 import urllib.parse
+from copy import deepcopy
 
 #a tapas of additional scientific computing 
 from scipy.spatial import distance
@@ -27,7 +28,8 @@ class NormCipherList:
         self.permLevel = permLevel
 
         if fromPlain:
-            importData = import_and_encrypt_list(cipherListOfList,apiContext,seedString,keyRange,permLevel=permLevel)
+            
+            importData = import_and_encrypt_list(cipherListOfList,apiContext,seedString=seedString,keyRange=keyRange,permLevel=permLevel)
             self.cipherListOfList = importData[0]
             self.indicesListOfList = importData[1]
             
@@ -92,7 +94,8 @@ class NormCipherList:
             yield self[slice(i,i+1)]
             
     def pad(self,charsToAdd):
-        encryptPadding = NormCipherFrame(self.apiContext,pd.DataFrame([[' '*charsToAdd]*len(self.cipherListOfList)]).transpose())[0]
+        encryptPadding = NormCipherList(self.apiContext,[str(' '*charsToAdd) for word in range(len(self.cipherListOfList))],fromPlain=True,keyRange=2000)
+        
         return NormCipherList(
             self.apiContext,
             [
@@ -292,55 +295,56 @@ class NormCipherList:
             i+=len(encryptedWord)
         return plain
     
-    def generate_matches(self,other):
+    def generate_matches(self,other, precision = .0000000001):
         lengthDiff = self.colMaxChars - other.colMaxChars
         if lengthDiff > 0:
-            compareOne = self.checksum()
-            compareTwo = other.pad(lengthDiff).checksum()
+            paddedOther = deepcopy(other).pad(lengthDiff)
+            paddedSelf = deepcopy(self)
         elif lengthDiff < 0:
-            compareOne = self.pad(lengthDiff).checksum()
-            compareTwo = other.checksum()
+            paddedSelf = deepcopy(self).pad(-1*lengthDiff)
+            paddedOther = deepcopy(other)
         else:
-            compareOne = self.checksum()
-            compareTwo = other.checksum()            
-            
-        matches = []
-        hasMatchOne = []
-        hasMatchTwo = []
-        for i in range(len(compareOne)):
-            currentHash = compareOne[i]
-            for j in range(len(compareTwo)):
-                if compareOne[i]==compareTwo[j]:
-                    matches.append((i,j))
-                    hasMatchOne.append(i)
-                    hasMatchTwo.append(j)
-                    
-        checkNCL = NormCipherList(
-            self.apiContext,
-            [self.cipherListOfList[i] for i in hasMatchOne],
-            indexData = [self.indicesListOfList[i] for i in hasMatchOne]
-        ).vert_merge(
-            NormCipherList(
-                self.apiContext,
-                [other.cipherListOfList[i] for i in hasMatchTwo],
-                indexData = [other.indicesListOfList[i] for i in hasMatchTwo]
-            )
-        )
-
-
-        matchCheck = checkNCL.char_equal_mx()
+            paddedOther = deepcopy(other)
+            paddedSelf = deepcopy(self)
         
-        wordLength = self.colMaxChars
-        compareLength = len(matches)
-        newMatches = []
-        for i in range(compareLength):
-            spotCheck = np.all(np.diagonal(matchCheck[
-                (wordLength*i):(wordLength*i+wordLength),
-                (compareLength*wordLength+wordLength*i):(compareLength*wordLength+wordLength*i+wordLength)
-            ])==1)
-            if spotCheck:
-                newMatches.append(matches[i])
-        return newMatches
+        otherLen = len(paddedOther)
+
+        combinedNCL = paddedSelf.vert_merge(paddedOther).align_indices()
+
+        matches = []
+        curPrecision = 1
+        while curPrecision > precision:
+            
+            if curPrecision / precision > 100000:
+                n = 100000
+            else:
+                n = int(curPrecision/precision)
+            
+            hashes = combinedNCL.hash(n=n)
+            
+            curPrecision /= n
+
+            selfHashes = np.array(hashes[0:len(self)])
+            otherHashes = np.array(hashes[len(self):])
+
+            if matches == []:
+                
+                for i in range(len(otherHashes)):
+                    
+                    ii = np.where(selfHashes == otherHashes[i])[0]
+                    for num in ii:
+                        matches.append((int(num),i))
+                
+            else:
+                for pair in matches:
+                    
+                    if selfHashes[pair[0]] != otherHashes[pair[1]]:
+                        matches.remove(pair)
+
+
+
+        
+        return matches
       
       
     # this function returns a list of NormCipherLists grouped by value (hash value currently)
@@ -381,30 +385,53 @@ class NormCipherList:
             n
         )
         serverTime = time.time()- serverStart
-        print("Server Time: {}".format(serverTime))
+        #print("Server Time: {}".format(serverTime))
         #print(self.colMaxChars)
         #print(hashDecryptKey)
         n = int(hashDecryptKey[0]['prime'])
+        
         coeffs = json.loads(hashDecryptKey[0]['coefficients'])
-        #print(coeffs[0])
+        
         multiplyStart= time.time()
         weightedCipherList = []
         for i in range(self.length):
             weightedCipherList.append([self.cipherListOfList[i][j]*coeffs[j] for j in range(len(self.cipherListOfList[i]))])
         multiplyTime = time.time()-multiplyStart
-        print("Multiplication step: {}".format(multiplyTime))
+        #print("Multiplication step: {}".format(multiplyTime))
         sumStart = time.time()
         hashList = [
             int(t[0]-t[1]['computed_range_sum'])%n
             for t in zip([sum(u) for u in weightedCipherList],hashDecryptKey)
         ]
         sumTime = time.time()-sumStart
-        print("Sum step: {}".format(sumTime))
+        #print("Sum step: {}".format(sumTime))
         return hashList
     
+    def align_indices(self):
+        flatIndices = flatten_list(self.indicesListOfList)
+        #print(flatIndices)
+        alignmentKey = align_index_key(self.apiContext,flatIndices)
+        minId = int(alignmentKey[0]['id'])
+        
+        newIndicesLOL = []
+        totalIndex = 0
+        for i in range(self.length):
+
+            newIndicesL = list(range(minId,minId+self.colMaxChars))
+            for j in range(self.colMaxChars):
+                self.cipherListOfList[i][j] += int(alignmentKey[totalIndex]['atom_key'])
+                totalIndex += 1
+            minId += self.colMaxChars
+            newIndicesLOL.append(newIndicesL)
+                
+                
+        self.indicesListOfList = newIndicesLOL
+        
+        return self
+
+
     
-    
-def import_and_encrypt_list(myPlaintext,apiContext,desiredPerms=False,seedString=False,keyRange=32766,permLevel='standard'):
+def import_and_encrypt_list(myPlaintext,apiContext,seedString=False,keyRange=2000,permLevel='standard'):
     
     
 
