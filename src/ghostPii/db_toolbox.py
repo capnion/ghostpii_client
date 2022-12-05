@@ -223,7 +223,7 @@ def linking_key(apiContext,indicesJson):
 
     #post a blob of information about the desired polynomial computation at the given timestamp
     test = apiContext.post('/blob/',{"assigned_user":apiContext.userId,"keyJSON":indicesJson,"userhash":timeStamp})
-    print(test)
+    #print(test)
     
     url = '/recordlink/?blobData=%d' % (
         timeStamp,
@@ -281,36 +281,65 @@ def ngram_checksum_key(apiContext,window,wordLength,indicesJson,isFloat=False,is
         isFloat,
         isAligned
     )
-    print(url)
+    #print(url)
     return apiContext.get(url)
 
 def polyn_comp_key(apiContext,polyn,polynVars,indicesTupleList,dualListOfList,isFloat=False,paillier=True):
-    
-    #get the current timestamp
-    timeStamp = int(str(datetime.datetime.now()).replace(' ','').replace('-','').replace(':','').replace('.','')[0:18])
-    
-    #information about the polynomial to be computed
-    polynData = {
-        'polyn':polyn,
-        'polynVars':polynVars,
-        'indicesTupleList':indicesTupleList,
-        'dualTupleList':dualListOfList,
-        'isFloat':isFloat,
-        'paillier':paillier,
-    }
-    
 
-    #post a blob of information about the desired polynomial computation at the given timestamp
-    test = apiContext.post('/blob/',{"assigned_user":apiContext.userId,"keyJSON":json.dumps(polynData),"userhash":timeStamp})
-    #print(test.text)
-    #this url tells the general polynomial endpoint to compute the desired polynomial
-    url = '/general/?blobData=%d' % (
-        timeStamp,
-    )
+    fullLength = len(indicesTupleList) * len(indicesTupleList[0])
     
-    output = apiContext.get(url)
-    #print(output)
-    return output
+    requestLimit = 20000
+    randomSeed = random.randint(1,1000000)
+    fullMonomial = None
+
+    singleCallLength = len(indicesTupleList[0])
+
+    for i in range(fullLength//requestLimit + 1):
+        
+        if (i+1)*requestLimit*singleCallLength > fullLength:
+            curIndices = indicesTupleList[i*(requestLimit//singleCallLength):]
+        elif i*requestLimit*singleCallLength >= fullLength:
+            pass
+        else:
+            curIndices = indicesTupleList[i*(requestLimit//singleCallLength):(i+1)*(requestLimit//singleCallLength)]
+
+        #get the current timestamp
+        timeStamp = int(str(datetime.datetime.now()).replace(' ','').replace('-','').replace(':','').replace('.','')[0:18])
+        
+        #information about the polynomial to be computed
+        polynData = {
+            'polyn':polyn,
+            'polynVars':polynVars,
+            'indicesTupleList':curIndices,
+            'dualTupleList':dualListOfList,
+            'isFloat':isFloat,
+            'paillier':paillier,
+            'seed': randomSeed,
+        }
+        
+
+        #post a blob of information about the desired polynomial computation at the given timestamp
+        test = apiContext.post('/blob/',{"assigned_user":apiContext.userId,"keyJSON":json.dumps(polynData),"userhash":timeStamp})
+        #print(test.text)
+        #this url tells the general polynomial endpoint to compute the desired polynomial
+        url = '/general/?blobData=%d' % (
+            timeStamp,
+        )
+        
+        output = apiContext.get(url)
+        if i == 0 :
+            fullMonomial = json.loads(output[0]['keyJSON'])['monomialData']
+        else:
+            
+            fullMonomial = {**fullMonomial,**json.loads(output[0]['keyJSON'])['monomialData']}
+    
+    finalOutput = output
+    fullJSON = json.loads(output[0]['keyJSON'])
+    fullJSON['monomialData'] = fullMonomial
+    fullJSON['indicesTupleList'] = indicesTupleList
+    finalOutput[0]['keyJSON'] = json.dumps(fullJSON)
+    #print(finalOutput)
+    return finalOutput
 
 def hash_key(apiContext,wordLength,indicesJson,n):
     
@@ -324,7 +353,7 @@ def hash_key(apiContext,wordLength,indicesJson,n):
         
         
         if (i+1)*requestLimit*wordLength > fullLength:
-            curIndices = indicesJson[i*requestLimit*wordLength:-1]
+            curIndices = indicesJson[i*requestLimit*wordLength:]
         elif i*requestLimit*wordLength >= fullLength:
             pass
         else:
@@ -351,34 +380,61 @@ def hash_key(apiContext,wordLength,indicesJson,n):
 
 
 def rand_poly_comp_key(apiContext,polyn,polynVars,indicesTupleList,dualListOfList,isFloat=False,paillier=True):
+
+    fullLength = len(indicesTupleList) * len(indicesTupleList[0])
     
-    #get the current timestamp
-    timeStamp = int(str(datetime.datetime.now()).replace(' ','').replace('-','').replace(':','').replace('.','')[0:18])
+    requestLimit = 20000
+    randomSeed = random.randint(1,1000000)
+    fullMonomial = None
     
-    #information about the polynomial to be computed
-    polynData = {
-        'polyn':polyn,
-        'polynVars':polynVars,
-        'indicesTupleList':indicesTupleList,
-        'dualTupleList':dualListOfList,
-        'isFloat':isFloat,
-        'paillier':paillier,
-    }
+    for i in range(fullLength//requestLimit + 1):
+        
+        if (i+1)*requestLimit*singleCallLength > fullLength:
+            curIndices = indicesTupleList[i*(requestLimit//singleCallLength):]
+        elif i*requestLimit*singleCallLength >= fullLength:
+            pass
+        else:
+            curIndices = indicesTupleList[i*(requestLimit//singleCallLength):(i+1)*(requestLimit//singleCallLength)]
+
+        #get the current timestamp
+        timeStamp = int(str(datetime.datetime.now()).replace(' ','').replace('-','').replace(':','').replace('.','')[0:18])
+        
+        #information about the polynomial to be computed
+        polynData = {
+            'polyn':polyn,
+            'polynVars':polynVars,
+            'indicesTupleList':indicesTupleList,
+            'dualTupleList':dualListOfList,
+            'isFloat':isFloat,
+            'paillier':paillier,
+            'seed': randomSeed,
+        }
+        
+        #print(polyn)
+        
+        #post a blob of information about the desired polynomial computation at the given timestamp
+        test = apiContext.post('/blob/',{"assigned_user":apiContext.userId,"keyJSON":json.dumps(polynData),"userhash":timeStamp})
+        #print(test.text)
+        
+        #this url tells the general polynomial endpoint to compute the desired polynomial
+        url = '/randomized-poly/?blobData=%d' % (
+            timeStamp,
+        )
+        
+        output = apiContext.get(url)
+        if i == 0 :
+            fullMonomial = json.loads(output[0]['keyJSON'])['monomialData']
+        else:
+            
+            fullMonomial = {**fullMonomial,**json.loads(output[0]['keyJSON'])['monomialData']}
     
-    #print(polyn)
-    
-    #post a blob of information about the desired polynomial computation at the given timestamp
-    test = apiContext.post('/blob/',{"assigned_user":apiContext.userId,"keyJSON":json.dumps(polynData),"userhash":timeStamp})
-    #print(test.text)
-    
-    #this url tells the general polynomial endpoint to compute the desired polynomial
-    url = '/randomized-poly/?blobData=%d' % (
-        timeStamp,
-    )
-    
-    output = apiContext.get(url)
-    #print(output)
-    return output
+    finalOutput = output
+    fullJSON = json.loads(output[0]['keyJSON'])
+    fullJSON['monomialData'] = fullMonomial
+    fullJSON['indicesTupleList'] = indicesTupleList
+    finalOutput[0]['keyJSON'] = json.dumps(fullJSON)
+    #print(finalOutput)
+    return finalOutput
 
 def paillier_convert(apiContext,paillierDict):
     

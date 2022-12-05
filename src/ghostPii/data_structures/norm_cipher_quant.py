@@ -308,7 +308,7 @@ class NormCipherQuant:
 
             plainResults = full_polynomial_compute(self.apiContext,'random-comparison',['x','y'],myIndices,cipherPair,isFloat=self.floatData,paillier=False,outPlain=True)
             
-            print(plainResults)
+            
             return [int(num < 0) for num in plainResults]
         elif isinstance(other, (int, float, complex,np.int64,np.float64)):
             other = NormCipherNum(self.apiContext,other,fromPlain=True,keyRange=20)
@@ -318,7 +318,7 @@ class NormCipherQuant:
             plainResults = full_polynomial_compute(self.apiContext,'random-comparison',
                                               ['x','y'],myIndices,cipherPair,isFloat=self.floatData,paillier=False,outPlain=True)
             
-            print(plainResults)
+            
             return [int(num < 0) for num in plainResults]
         else:
             return False
