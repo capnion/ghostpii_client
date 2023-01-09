@@ -145,7 +145,7 @@ def encryption_key(apiContext,minMax,htmlDebug=False,seedString=False):
             lower = minMax[0] + i * requestLimit
             upper = minMax[0] + (i+1) * requestLimit
             if lower == minMax[1]:
-                pass
+                break
             elif upper > minMax[1]:
                 upper = minMax[1]
                 

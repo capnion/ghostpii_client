@@ -1,10 +1,11 @@
 # basic modules
-import numpy as np
+
 import pandas as pd
 import json
 from sqlalchemy import *
 import urllib.parse
 from copy import deepcopy
+import numpy as np
 
 #a tapas of additional scientific computing 
 from scipy.spatial import distance
@@ -115,12 +116,14 @@ class NormCipherList:
                 self.cipherListOfList+other.cipherListOfList,
                 indexData = self.indicesListOfList+other.indicesListOfList
             )
-        else:
+        elif type(other) == NormCipherString:
             return NormCipherList(
                 self.apiContext,
                 self.cipherListOfList+[other.cipherList],
                 indexData = self.indicesListOfList+[other.indicesList]
             )
+        else:
+            raise Exception("Cannot merge these datatypes")
 
     #the linking key endpoint needs to be updated to take into account the possibility of... 
     #...a more complicated list of indices
@@ -196,7 +199,7 @@ class NormCipherList:
 
     #this is for finding
     #this will require the API
-    def search(self,queryString,**kwargs):
+    def search(self,queryString, precision = .000000001,**kwargs):
         wordLength = len(self[0])
         if isinstance(queryString,str):
             # check for lengths and pad accordingly
@@ -212,33 +215,45 @@ class NormCipherList:
         # make sure we have a normCipherString now
         if not isinstance(queryString,NormCipherString):
             return False
-        
-        tempList = self.vert_merge(queryString)
-        
-        tempMx = tempList.char_equal_mx()
-        #print(len(tempMx))
-        #tempList.helper = AnalyticsHelper(self.apiContext,temp_mx,tempList.colMaxChars)
 
-        indexMatches = []
-        #return tempMx
-        # check equivalence
+        paddedOther = queryString
+        paddedSelf = deepcopy(self)
+        
+        combinedNCL = paddedSelf.vert_merge(paddedOther).align_indices()
 
-        for i in range(wordLength):
-            if i == 0:
-                for j in range(self.length):
-                    if tempMx[-1*wordLength][j*wordLength] == 1:
-                        indexMatches.append(j)
-                #print(indexMatches)
+        matches = []
+        curPrecision = 1
+        while curPrecision > precision:
+            
+            if curPrecision / precision > 50000:
+                n = 50000
             else:
-                for match in indexMatches:
-                    if tempMx[-1*wordLength+i][match*wordLength+i] == 1:
-                        pass
-                    else:
-                        indexMatches.remove(match)
+                n = int(curPrecision/precision)
+            
+            
+            hashes = combinedNCL.hash(n=n)
+            
+            curPrecision /= n
+
+            selfHashes = np.array(hashes[0:len(self)])
+            otherHash = hashes[-1]
+
+            if matches == []:
+                
+                potMatchList = np.where(selfHashes == otherHash)[0]
+                for num in potMatchList:
+                    matches.append(int(num))
+            
+            else:
+                for pair in matches:
+                    
+                    if selfHashes[pair] != otherHash:
+                        matches.remove(pair)
+
+
+
         
-        if indexMatches == []:
-            return False
-        return indexMatches #indices of occurrence
+        return matches
     
     #first attempt at computing a levenshtein distance for entity detection purposes
     def levenshtein(self):

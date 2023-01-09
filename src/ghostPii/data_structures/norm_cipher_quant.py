@@ -334,7 +334,7 @@ class NormCipherQuant:
             
             
             numList = [int(round(num) == 0) for num in plainResults]
-            return sum(numList) == len(numList)
+            return numList
         elif isinstance(other,NormCipherQuant):
             if len(other) != self.length:
                 return False
@@ -368,7 +368,7 @@ class NormCipherQuant:
             
             
             numList = [int(round(num) == 0) for num in plainResults]
-            return sum(numList) == len(numList)
+            return numList
         else:
             return False
     
