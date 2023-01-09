@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: ghostPii
-Version: 1.0.13
+Version: 1.0.14
 Summary: A private computation package
 Home-page: https://github.com/capnion/ghostpii_client
 Author: Capnion Inc.
@@ -12,6 +12,10 @@ Classifier: Operating System :: OS Independent
 Requires-Python: >=3.6
 Description-Content-Type: text/markdown
 License-File: LICENSE
+
+<p align="center">
+  <img src="https://github.com/capnion/ghostpii_client/blob/main/webpage.jpg">
+</p>
 
 Before you read too much below, you might consider having a look at 
 - these [streamlined setup instructions](https://github.com/capnion/ghostpii_client/blob/main/SETUP.md), 
