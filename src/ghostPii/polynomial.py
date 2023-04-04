@@ -90,7 +90,7 @@ def compute_polynomial(polynKey,indicesTupleList,cipherTupleList,polyn,paillier=
         formattedKeyEncrypted = formattedKey
     
     values = []
-    
+
     for fiber in zip(indicesTupleList,cipherTupleList):
         
         position=0
@@ -142,9 +142,11 @@ def full_polynomial_compute(apiContext,polyString,variables,myIndices,myCiphers,
     start = time.time()
     myKey = polyn_comp_key(apiContext,polyString,variables,myIndices,0,isFloat = isFloat,paillier=paillier)
     #print(myKey)
-    end = time.time()
+    end = time.time() 
     
     paillier = json.loads(myKey[0]['keyJSON'])['paillier']
+    compKeyTime = json.loads(myKey[0]['keyJSON'])['compKeyTime']
+    #print(compKeyTime)
     #print(paillier)
     if 'random' in polyString:
         myPoly = json.loads(myKey[0]['keyJSON'])['poly']
