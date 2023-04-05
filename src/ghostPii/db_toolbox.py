@@ -296,12 +296,14 @@ def polyn_comp_key(apiContext,polyn,polynVars,indicesTupleList,dualListOfList,is
 
     for i in range(fullLength//requestLimit + 1):
         
-        if (i+1)*requestLimit*singleCallLength > fullLength:
+        
+        if i*requestLimit*singleCallLength >= fullLength:
+            break
+        elif (i+1)*requestLimit*singleCallLength > fullLength:
             curIndices = indicesTupleList[i*(requestLimit//singleCallLength):]
-        elif i*requestLimit*singleCallLength >= fullLength:
-            pass
         else:
             curIndices = indicesTupleList[i*(requestLimit//singleCallLength):(i+1)*(requestLimit//singleCallLength)]
+
 
         #get the current timestamp
         timeStamp = int(str(datetime.datetime.now()).replace(' ','').replace('-','').replace(':','').replace('.','')[0:18])

@@ -49,15 +49,28 @@ class NormCipherFrame:
                         self.dataTypes.append('string')
                     else:
                         raise Exception('unknown data type')
-                importData = import_and_encrypt2(
-                    cipherListOfListOfList,
-                    self.apiContext,
-                    self.dataTypes,
-                    seedString=False,
-                    keyRange=keyRange,
-                    allFloat=allFloat,
-                    permLevel = permLevel
-                )  
+                if len(set(self.dataTypes)) == 1:
+                    importData = import_and_encrypt_once(
+                        cipherListOfListOfList,
+                        self.apiContext,
+                        self.dataTypes,
+                        seedString=False,
+                        keyRange=keyRange,
+                        allFloat=allFloat,
+                        permLevel = permLevel
+                    )  
+                else:
+                    importData = import_and_encrypt2(
+                        cipherListOfListOfList,
+                        self.apiContext,
+                        self.dataTypes,
+                        seedString=False,
+                        keyRange=keyRange,
+                        allFloat=allFloat,
+                        permLevel = permLevel
+                    )  
+
+
                 self.cipherListOfListOfList = importData[0]
                 indexData = importData[1]
                 self.pure = True
@@ -490,7 +503,82 @@ def import_and_encrypt2(myPlaintext,apiContext,dataTypes,desiredPerms=False,seed
         cipherListOfListOfList,
         indexListOfListOfList,
     )
+
+# A method for encrypting a frame with one call
+def import_and_encrypt_once(myPlaintext,apiContext,dataTypes,desiredPerms=False,seedString=False,keyRange=32766,allFloat=False,permLevel='standard'):
+
+    encodedFrame = []
+    totalLength = 0
+
+    # encode the frame
+    if dataTypes[0] == 'string':
+        for (columnName, columnData) in myPlaintext.iteritems():
+            myEncodedList = encode_list(columnData)
+            totalLength += len(myEncodedList)*len(myEncodedList[0])
+            encodedFrame.append(myEncodedList)
+    elif dataTypes[0] =='float':
+        for (columnName, columnData) in myPlaintext.iteritems():
+            myEncodedList = [[float(f)] for f in columnData]
+            totalLength += len(myEncodedList) 
+            encodedFrame.append(myEncodedList)
+    else:
+        for (columnName, columnData) in myPlaintext.iteritems():
+            myEncodedList = [[int(f)] for f in columnData]
+            totalLength += len(myEncodedList)
+            encodedFrame.append(myEncodedList)
+
+    # Now we reserve key space and encrypt
+    if isinstance(seedString,str):
+        myKeyLoc = apiContext.get('/statehash/?length=%d&seedString=%s'%(totalLength,seedString,))[0]
+        #print('basic state')
+    else:
+        myKeyLoc = apiContext.get('/state/?length='+str(totalLength)+'&range='+str(keyRange)
+                                    +'&permLevel='+urllib.parse.quote(permLevel))[0]
     
+    #create encryption key for current user
+    
+    dataBoundary = [myKeyLoc['minId'],myKeyLoc['maxId']]
+
+    
+    #pull enc key and encrypt
+
+    myKeyGenerator = encryption_key(apiContext,dataBoundary,htmlDebug=False,seedString=seedString)
+
+    sortedKeyGenerator = {}
+    for atom in myKeyGenerator:
+        sortedKeyGenerator[str(atom['id'])] = atom
+    #print(sortedKeyGenerator)
+    currentIndex = myKeyLoc['minId']
+    cipherListOfListOfList = []
+    indexListOfListOfList = []
+
+    for k in range(len(encodedFrame)):
+        cipherListOfList = []
+        indexListOfList = []
+        myEncodedList = encodedFrame[k]
+        for i in range(len(myEncodedList)):
+            cipherList = []
+            indexList = []
+            for j in range(len(myEncodedList[0])):
+                if dataTypes[0] == 'float':
+                    
+                    cipherList.append(myEncodedList[i][j]+int(sortedKeyGenerator[str(currentIndex)]['atom_key'])+int(sortedKeyGenerator[str(currentIndex)]['atom_key_inv'])/32767.0)
+                else:
+                    cipherList.append(myEncodedList[i][j]+int(sortedKeyGenerator[str(currentIndex)]['atom_key']))
+                indexList.append(currentIndex)
+                currentIndex += 1
+            cipherListOfList.append(cipherList)
+            indexListOfList.append(indexList)        
+            
+        
+        cipherListOfListOfList.append(cipherListOfList)
+        indexListOfListOfList.append(indexListOfList)
+    
+    return (
+        cipherListOfListOfList,
+        indexListOfListOfList,
+    )
+
 def import_from_db(cryptoContext,table_name,connection):
     meta_df = pd.read_sql_table(table_name,connection)
     meta_df = meta_df.drop('index',axis=1)
